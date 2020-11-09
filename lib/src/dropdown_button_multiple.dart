@@ -8,7 +8,7 @@ class DropdownButtonMultiple<T, V> extends StatefulWidget {
   final bool Function(T choice, V value) compareWith;
   final Function(List<V> values) onChanged;
   final Function(List<V> values) onSaved;
-  final List<dynamic> values;
+  final List<V> initValues;
 
   const DropdownButtonMultiple({
     Key key,
@@ -16,7 +16,7 @@ class DropdownButtonMultiple<T, V> extends StatefulWidget {
     this.displayLabelWith,
     this.getValueWith,
     this.onChanged,
-    this.values,
+    this.initValues,
     this.compareWith,
     this.placeholder,
     this.onSaved,
@@ -48,7 +48,7 @@ class _DropdownButtonMultipleState<T, V>
         )
         .toList();
 
-    widget.values.forEach((value) {
+    widget.initValues.forEach((value) {
       final item = itemsSelection
           .firstWhere((item) => widget.compareWith(item.obj, value));
       if (item != null) {
