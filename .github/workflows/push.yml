@@ -1,4 +1,4 @@
-name: Build CL Noticeboard
+name: Build Dropdowns Demo
 
 # This workflow is triggered on pushes to the repository.
 
@@ -37,9 +37,8 @@ jobs:
       #- run: flutter test
 
       # Build apk.
-      - name: Go to example directory
-        run: cd /example
       - name: Build Demo app
+        working-directory: ./example
         run: flutter build web
       - name: Deploy app to ghpages
         uses: JamesIves/github-pages-deploy-action@releases/v3
