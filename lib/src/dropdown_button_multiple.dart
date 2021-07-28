@@ -9,17 +9,21 @@ class DropdownButtonMultiple<T, V> extends StatefulWidget {
   final Function(List<V> values) onChanged;
   final Function(List<V> values) onSaved;
   final List<V> initValues;
+  final Widget icon;
+  final bool hasBorder;
 
   const DropdownButtonMultiple({
     Key key,
-    this.choices,
-    this.displayLabelWith,
-    this.getValueWith,
+    @required this.choices,
+    @required this.displayLabelWith,
+    @required this.getValueWith,
+    @required this.initValues,
+    @required this.compareWith,
+    @required this.placeholder,
     this.onChanged,
-    this.initValues,
-    this.compareWith,
-    this.placeholder,
     this.onSaved,
+    this.icon,
+    this.hasBorder = false,
   }) : super(key: key);
 
   @override
@@ -37,7 +41,9 @@ class _DropdownButtonMultipleState<T, V>
   @override
   void initState() {
     _key = GlobalKey();
+
     itemsSelection = widget.choices
+        .where((element) => element != null)
         .map(
           (e) => _SelectionObject<T, V>(
             label: widget.displayLabelWith(e),
@@ -48,9 +54,11 @@ class _DropdownButtonMultipleState<T, V>
         )
         .toList();
 
-    widget.initValues.forEach((value) {
-      final item = itemsSelection
-          .firstWhere((item) => widget.compareWith(item.obj, value));
+    widget.initValues?.forEach((value) {
+      final item = itemsSelection.firstWhere(
+        (item) => widget.compareWith(item.obj, value),
+        orElse: () => null,
+      );
       if (item != null) {
         item.isSelected = true;
       }
@@ -70,7 +78,7 @@ class _DropdownButtonMultipleState<T, V>
               .where((e) => e.isSelected)
               .map(
                 (e) => Chip(
-                  label: Text(e.label),
+                  label: Text(e.label ?? ''),
                   onDeleted: () {
                     setState(() => e.isSelected = false);
                     widget
@@ -83,16 +91,17 @@ class _DropdownButtonMultipleState<T, V>
         DropdownButtonFormField<_SelectionObject<T, V>>(
           key: _key,
           decoration: InputDecoration(
+              border: widget.hasBorder ? OutlineInputBorder() : null,
               labelText: selectedItems.isEmpty
                   ? widget.placeholder
                   : '${widget.placeholder} (${selectedItems.length} selected)'),
           isExpanded: true,
-          icon: Icon(Icons.local_offer),
+          icon: widget.icon ?? Icon(Icons.local_offer),
           items: itemsSelection
               .where((e) => !e.isSelected)
               .map(
                 (e) => DropdownMenuItem<_SelectionObject<T, V>>(
-                  child: Text(e.label),
+                  child: Text(e.label ?? ''),
                   value: e,
                 ),
               )
